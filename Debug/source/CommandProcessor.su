@@ -1,0 +1,5 @@
+../source/CommandProcessor.c:59:6:Handler_Author	16	static
+../source/CommandProcessor.c:78:6:Handler_Play	16	static
+../source/CommandProcessor.c:95:6:Handler_Help	24	static
+../source/CommandProcessor.c:116:6:HandleCommand	104	static
+../source/CommandProcessor.c:181:7:ReadLine	120	static

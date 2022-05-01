@@ -1,0 +1,13 @@
+C:\Users\Teju\Documents\MCUXpressoIDE_11.5.0_7232\workspace\ARMonica\CMSIS/core_cm0plus.h:745:22:NVIC_EnableIRQ	16	static
+C:\Users\Teju\Documents\MCUXpressoIDE_11.5.0_7232\workspace\ARMonica\CMSIS/core_cm0plus.h:791:22:NVIC_ClearPendingIRQ	16	static
+C:\Users\Teju\Documents\MCUXpressoIDE_11.5.0_7232\workspace\ARMonica\CMSIS/core_cm0plus.h:804:22:NVIC_SetPriority	24	static
+../source/AudioOut.c:33:6:TPM0_Init	16	static
+../source/AudioOut.c:69:6:TPM0_Start	8	static
+../source/AudioOut.c:85:6:TPM0_IRQHandler	8	static
+../source/AudioOut.c:103:6:DMA_Init	8	static
+../source/AudioOut.c:139:6:DMA_SetPlaybackValues	16	static
+../source/AudioOut.c:156:6:DMA_StartPlayback	8	static
+../source/AudioOut.c:179:6:DMA0_IRQHandler	8	static
+../source/AudioOut.c:198:6:DAC_Init	8	static
+../source/AudioOut.c:226:6:AudioOut_Init	8	static
+../source/AudioOut.c:240:6:AudioOut_Start	8	static

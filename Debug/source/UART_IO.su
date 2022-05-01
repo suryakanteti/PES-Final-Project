@@ -1,0 +1,7 @@
+C:\Users\Teju\Documents\MCUXpressoIDE_11.5.0_7232\workspace\ARMonica\CMSIS/core_cm0plus.h:745:22:NVIC_EnableIRQ	16	static
+C:\Users\Teju\Documents\MCUXpressoIDE_11.5.0_7232\workspace\ARMonica\CMSIS/core_cm0plus.h:791:22:NVIC_ClearPendingIRQ	16	static
+C:\Users\Teju\Documents\MCUXpressoIDE_11.5.0_7232\workspace\ARMonica\CMSIS/core_cm0plus.h:804:22:NVIC_SetPriority	24	static
+c:\nxp\mcuxpressoide_11.5.0_7232\ide\plugins\com.nxp.mcuxpresso.tools.win32_11.5.0.202107051138\tools\redlib\include\sys\libconfig-arm.h:241:5:__sys_readc	16	static
+c:\nxp\mcuxpressoide_11.5.0_7232\ide\plugins\com.nxp.mcuxpresso.tools.win32_11.5.0.202107051138\tools\redlib\include\sys\libconfig-arm.h:247:5:__sys_write	32	static
+../source/UART_IO.c:88:6:Init_UART0	24	static
+../source/UART_IO.c:166:6:UART0_IRQHandler	16	static
