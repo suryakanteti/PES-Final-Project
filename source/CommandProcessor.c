@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "cbfifo.h"
 
 #define ENTER_KEY (13)
 
@@ -77,6 +78,25 @@ void Handler_Author(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGU
   */
 void Handler_Play(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS])
 {
+	int tone = -1;
+	int duration = -1;
+
+	for(int i = 1; i < argc; i = i + 2)
+	{
+		if(strcasecmp(argv[i], "A") == 0)
+		{
+			tone = 0;
+		}
+		else // tone D
+		{
+			tone = 1;
+		}
+
+		duration = atoi(argv[i + 1]);
+
+		cbfifo_enqueue(TONES, &tone, 1);
+		cbfifo_enqueue(TONES, &duration, 1);
+	}
 	printf("\n\rTones in progress...\r\n");
 }
 

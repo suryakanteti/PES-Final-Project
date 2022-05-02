@@ -19,9 +19,9 @@
 // Enum to identify TX/RX buffer
 enum QueueType{
 	TXQ,
-	RXQ
+	RXQ,
+	TONES
 };
-
 
  /*
   * Enqueues data onto the FIFO, up to the limit of the available FIFO

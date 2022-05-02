@@ -41,8 +41,10 @@
 #include "fsl_debug_console.h"
 
 
-#include "UART_IO.h"
 #include "CommandProcessor.h"
+#include "AudioOut.h"
+#include "SysTick.h"
+#include "UART_IO.h"
 
 #define BAUD_RATE (38400)
 
@@ -57,9 +59,12 @@ int main(void) {
     BOARD_InitDebugConsole();
 #endif
 
-    printf("ARMonica time!\r\n");
-
     Init_UART0(BAUD_RATE);
+    SysTick_Init();
+    AudioOut_Init();
+    AudioOut_Start();
+
+    printf("ARMonica time!\r\n");
 
     char* command;
 

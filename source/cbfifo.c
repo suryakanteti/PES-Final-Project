@@ -22,8 +22,9 @@ typedef struct cbfifo_s
 	uint8_t cbFifo[CBFIFO_SIZE];
 } cbfifo_t;
 
-// Structures for TX and RX queues
-cbfifo_t queues[2];
+
+// Structures for UART TX, UART RX and TONES queues
+cbfifo_t queues[3];
 
 
 /*
