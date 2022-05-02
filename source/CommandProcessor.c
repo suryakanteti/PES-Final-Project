@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include "cbfifo.h"
 
@@ -31,6 +32,7 @@ typedef struct command_table_s{
 
 void Handler_Author(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS]);
 void Handler_Play(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS]);
+void Handler_Echo(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS]);
 void Handler_Help(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS]);
 
 // Command table containing all the supported commands.
@@ -38,6 +40,7 @@ static const command_table_t commands[] = {
 
 		{"author", &Handler_Author, "\n\r\tPrint the author's name"},
 		{"play"  , &Handler_Play  , "\n\r\tPlay the inputted tones based on the duration"},
+		{"echo"  , &Handler_Echo  , "\n\r\tSet the echo mode on or off"},
 		{"help"  , &Handler_Help  , "\n\r\tPrint this help message"},
 };
 
@@ -79,20 +82,27 @@ void Handler_Author(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGU
 void Handler_Play(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS])
 {
 	int tone = -1;
-	int duration = -1;
+	int duration;
 
-	for(int i = 1; i < argc; i = i + 2)
+	for(int i = 1; i < argc; i++)
 	{
-		if(strcasecmp(argv[i], "A") == 0)
+		duration = 0;
+
+		switch (toupper(argv[i][0]))
 		{
+		case 'A':
 			tone = 0;
-		}
-		else // tone D
-		{
+			break;
+		case 'D':
 			tone = 1;
+			break;
 		}
 
-		duration = atoi(argv[i + 1]);
+		for(int j = 1; j < strlen(argv[i]); j++)
+		{
+			duration = duration * 10;
+			duration += (int)(argv[i][j]) - 48;
+		}
 
 		cbfifo_enqueue(TONES, &tone, 1);
 		cbfifo_enqueue(TONES, &duration, 1);
@@ -100,6 +110,21 @@ void Handler_Play(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUME
 	printf("\n\rTones in progress...\r\n");
 }
 
+/*
+  * Handles the command "echo".
+  * Sets echo mode to on or off based on parameters.
+  *
+  * Parameters:
+  *   argc		Number of arguments
+  *   argv		Array of arguments
+  *
+  * Returns:
+  *   None
+  */
+void Handler_Echo(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS])
+{
+	printf("\n\rEcho mode...yet to do...\r\n");
+}
 
 /*
   * Handles the command "help".
