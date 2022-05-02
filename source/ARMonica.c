@@ -65,14 +65,23 @@ int main(void) {
     AudioOut_Start();
 
     printf("ARMonica time!\r\n");
+    printf("? ");
 
+
+    bool handleCommand = false;
     char command[100];
+    int index = 0;
 
     while (1)
     {
-    	printf("? ");
-        ReadLine(command); // Read user input
-        HandleCommand(command); // Parse command and responds on terminal
+        handleCommand = ReadLine(command, &index); // Read user input
+
+        if(handleCommand)
+        {
+        	HandleCommand(command); // Parse command and responds on terminal
+        	handleCommand = false;
+        	printf("? ");
+        }
     }
 
     return 0 ;
