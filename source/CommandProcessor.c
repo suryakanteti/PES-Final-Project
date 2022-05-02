@@ -218,16 +218,14 @@ void HandleCommand(char* input)
   * Reads the string entered by user on the UART based console.
   *
   * Parameters:
-  *   None
+  *   Pointer to the buffer which contains the input from the user
   *
   * Returns:
   * 	A string (char*) which contains the input from the user
   */
-char* ReadLine()
+void ReadLine(char* commandStr)
 {
 	char ch;
-	char* linePtr;
-	char line[100];
 
 	int index = 0;
 	while (ch != ENTER_KEY)
@@ -235,7 +233,7 @@ char* ReadLine()
 		ch = getchar();
 	  	if(ch != -1 && ch != '\b')
 	  	{
-	  		line[index] = ch;
+	  		commandStr[index] = ch;
 	  	    index++;
 	  	}
 	  	if(ch == '\b' && index != 0) // Handle backspace
@@ -245,7 +243,5 @@ char* ReadLine()
 	  	}
 	}
 
-	line[index - 1] = '\0';
-	linePtr = line;
-	return linePtr;
+	commandStr[index - 1] = '\0';
 }

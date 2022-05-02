@@ -24,12 +24,12 @@ void HandleCommand(char* input);
   * Reads the string entered by user on the UART based console.
   *
   * Parameters:
-  *   None
+  *   Pointer to the buffer which contains the input from the user
   *
   * Returns:
   * 	A string (char*) which contains the input from the user
   */
-char* ReadLine();
+void ReadLine(char* commandStr);
 
 
 #endif /* COMMANDPROCESSOR_H_ */

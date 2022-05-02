@@ -66,12 +66,12 @@ int main(void) {
 
     printf("ARMonica time!\r\n");
 
-    char* command;
+    char command[100];
 
     while (1)
     {
     	printf("? ");
-        command = ReadLine(); // Read user input
+        ReadLine(command); // Read user input
         HandleCommand(command); // Parse command and responds on terminal
     }
 
