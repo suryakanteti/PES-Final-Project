@@ -133,7 +133,7 @@ void Init_UART0(uint32_t baud_rate)
 
 	// Enable interrupts. Listing 8.11 on p. 234
 
-	NVIC_SetPriority(UART0_IRQn, 2); // 0, 1, 2, or 3
+	NVIC_SetPriority(UART0_IRQn, 1); // 0, 1, 2, or 3
 	NVIC_ClearPendingIRQ(UART0_IRQn);
 	NVIC_EnableIRQ(UART0_IRQn);
 

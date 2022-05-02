@@ -5,7 +5,8 @@
  * Author: Surya Kanteti
  */
 
-#include"cbfifo.h"
+#include "cbfifo.h"
+#include "MKL25Z4.h"
 
 #define LOWER8_MASK 0xFF
 
@@ -48,6 +49,10 @@ size_t cbfifo_enqueue(int bufSelect, void* buf, size_t nbyte)
 	if (queues[bufSelect].isFull)
 		return 0; // Cannot write anything because the buffer is full.
 
+	uint32_t maskingState;
+	maskingState = __get_PRIMASK();
+	__disable_irq();
+
 	if (nbyte > CBFIFO_SIZE - queues[bufSelect].length)
 		nbyte = CBFIFO_SIZE - queues[bufSelect].length; // Write only into the available number of bytes.
 
@@ -64,6 +69,7 @@ size_t cbfifo_enqueue(int bufSelect, void* buf, size_t nbyte)
 		if (queues[bufSelect].length != 0)
 			queues[bufSelect].isFull = true;
 
+	__set_PRIMASK(maskingState);
 	return nbyte;
 }
 
@@ -93,6 +99,10 @@ size_t cbfifo_dequeue(int bufSelect, void* buf, size_t nbyte)
 	if (queues[bufSelect].length == 0)
 		return 0; // Cannot dequeue anything if the buffer is empty.
 
+	uint32_t maskingState;
+	maskingState = __get_PRIMASK();
+	__disable_irq();
+
 	if (nbyte > queues[bufSelect].length)
 		nbyte = queues[bufSelect].length; // Cannot dequeue more bytes than existing.
 
@@ -107,6 +117,8 @@ size_t cbfifo_dequeue(int bufSelect, void* buf, size_t nbyte)
 
 	queues[bufSelect].length -= nbyte;
 	queues[bufSelect].isFull = false; // Since bytes were removed, buffer is not full anymore.
+
+	__set_PRIMASK(maskingState);
 	return nbyte;
 }
 

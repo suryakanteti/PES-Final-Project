@@ -15,7 +15,7 @@
 #define ENTER_KEY (13)
 
 // Argument parameters
-#define MAX_NUM_OF_ARGUMENTS 5
+#define MAX_NUM_OF_ARGUMENTS 15
 #define MAX_LENGTH_OF_ARGUMENTS 10
 
 typedef void (*command_handler_t)(int, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS]);
