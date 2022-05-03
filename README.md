@@ -16,6 +16,8 @@ Header files: AudioOut.h, cbfifo.h, CommandProcessor.h, fp_trig.h, UART_IO.h
 
 Build the project in either Debug or Release mode. Indebug, extra tests will be run to verify authenticity of the modules.
 
+Connect a speaker to the FRDM-KL25Z board by connecting the PTE30 DAC output pin (J10 11) to the positive node of the speaker and connect the negative node to GND.
+
 Run the project.
 
 On running the project the following, line appears on the screen.
@@ -32,8 +34,12 @@ The UART is non-blocking and highly responsive, where the user can enter command
 
 The DSP effect of an echo is introduced using the echo command, where the echo sound effect is created for a tone with diminishing volume.
 
+The "play" command can take multiple tones at once, including the duration of each tone in seconds.
+
 # Error Handling
 
 Error handling is done based on each command. For example, the play command does not accept more than 20 tones at once and it indicates the user the same.
+
+Please refer to the 
 
 "echo" command needs exactly two arguments, including the command name.
