@@ -120,6 +120,9 @@ void Handler_Play(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUME
 		case 'G':
 			tone = 6;
 			break;
+		default:
+			printf("\r\nInvalid tone. Please check!\r\n");
+			break;
 		}
 
 		for(int j = 1; j < strlen(argv[i]); j++)
