@@ -11,38 +11,31 @@
 #include "SysTick.h"
 #include "cbfifo.h"
 
+#include "fp_trig.h"
+
 #define CLOCK_FREQUENCY (48000000)
 
 // Sampling rate of DAC
 #define DAC_SAMPLING_RATE (48000)
 
+// Pin of DAC output
 #define DAC_POS (30)
 
-const static uint16_t tone_A[] =
-			{2037, 2154, 2270, 2386, 2501, 2615, 2726, 2836, 2942, 3045, 3146, 3242, 3335, 3424, 3506, 3585,
-			 3659, 3727, 3790, 3847, 3897, 3942, 3981, 4013, 4037, 4056, 4068, 4073, 4072, 4064, 4048, 4027,
-			 3999, 3964, 3923, 3875, 3822, 3762, 3697, 3626, 3551, 3470, 3384, 3294, 3199, 3101, 3000, 2895,
-			 2787, 2677, 2564, 2450, 2335, 2218, 2101, 1985, 1867, 1751, 1636, 1521, 1408, 1298, 1189, 1085,
-			 983, 884, 790, 699, 612, 531, 455, 383, 318, 258, 204, 155, 114, 79, 50, 28, 11, 2, 1, 5, 17, 35,
-			 58, 90, 127, 172, 222, 278, 340, 408, 481, 559, 643, 730, 822, 919, 1018, 1121, 1228, 1337, 1447,
-			 1562, 1676, 1792, 1909};
 
-const static uint16_t tone_D[] =
-			{2037, 2193, 2348, 2501, 2653, 2800, 2943, 3080, 3211, 3336, 3452, 3560, 3660, 3749, 3829, 3898,
-			 3957, 4003, 4037, 4061, 4072, 4072, 4059, 4035, 3998, 3950, 3891, 3820, 3740, 3649, 3549, 3439,
-			 3322, 3196, 3065, 2927, 2784, 2636, 2485, 2331, 2176, 2020, 1864, 1709, 1556, 1405, 1258, 1116,
-			 979, 849, 725, 609, 502, 404, 315, 237, 169, 112, 66, 34, 11, 2, 3, 17, 43, 80, 130, 190, 262,
-			 343, 436, 536, 647, 766, 892, 1024, 1162, 1307, 1454, 1607, 1760};
+uint16_t samplesBuffers[2][150]; // Buffers to alternate between
 
+int currentBuffer = 0; // Index to keep track of samplesBuffers
+
+enum e_Tone{
+		A,
+		D,
+};
+
+uint16_t toneFrequencies[] = {440, 587};
 
 const static uint16_t emptyBuff[] = {0};
 
-
-uint16_t* tonesArray[] = {tone_A, tone_D};
-uint8_t  toneCounts[] = {109, 81};
-
-uint8_t duration = 0;
-uint8_t toneIndex = -1;
+uint8_t toneDuration = 0;
 
 // Variables to store playback source and count
 static uint16_t * Reload_DMA_Source = emptyBuff;
@@ -209,22 +202,6 @@ void DMA0_IRQHandler(void)
 	// Clear done flag
 	DMA0->DMA[0].DSR_BCR |= DMA_DSR_BCR_DONE_MASK;
 
-	if(get_timer() > 16 * duration)
-	{
-		reset_timer();
-		if(cbfifo_dequeue(TONES, &toneIndex, 1) == 1)
-		{
-			cbfifo_dequeue(TONES, &duration, 1);
-			Reload_DMA_Source = tonesArray[toneIndex];
-			Reload_DMA_Byte_Count = toneCounts[toneIndex] * 2;
-		}
-		else
-		{
-			Reload_DMA_Source = emptyBuff;
-			Reload_DMA_Byte_Count = 2;
-			duration = 0;
-		}
-	}
 	// Start the next DMA playback cycle
 	DMA_StartPlayback();
 }
@@ -287,4 +264,33 @@ void AudioOut_Start()
 {
 	TPM0_Start();
 	DMA_StartPlayback();
+}
+
+
+
+void ComputeSamples()
+{
+	uint8_t tone;
+	int count;
+
+	if(get_timer() > 16 * toneDuration)
+	{
+		reset_timer();
+		if(cbfifo_dequeue(TONES, &tone, 1) == 1)
+		{
+			cbfifo_dequeue(TONES, &toneDuration, 1);
+			count = tone_to_samples(samplesBuffers[currentBuffer], toneFrequencies[tone]);
+
+			Reload_DMA_Source = samplesBuffers[currentBuffer];
+			Reload_DMA_Byte_Count = count * 2;
+
+			currentBuffer = 1 - currentBuffer;
+		}
+		else
+		{
+			Reload_DMA_Source = emptyBuff;
+			Reload_DMA_Byte_Count = 2;
+			toneDuration = 0;
+		}
+	}
 }

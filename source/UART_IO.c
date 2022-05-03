@@ -34,7 +34,10 @@ int __sys_readc()
 	char ch;
 
 	// Wait till something is written into RX buffer.
-	while(cbfifo_length(RXQ) == 0);
+	//while(cbfifo_length(RXQ) == 0);
+
+	if(cbfifo_length(RXQ) == 0)
+		return -1;
 
 	if(cbfifo_dequeue(RXQ, &ch, sizeof(char)) == 0) // Some error
 		return -1;

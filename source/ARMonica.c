@@ -74,7 +74,7 @@ int main(void) {
 
     while (1)
     {
-        handleCommand = ReadLine(command, &index); // Read user input
+        handleCommand = ReadLine(command, &index, (sizeof(command) / sizeof(char))); // Read user input
 
         if(handleCommand)
         {
@@ -82,6 +82,8 @@ int main(void) {
         	handleCommand = false;
         	printf("? ");
         }
+
+        ComputeSamples();
     }
 
     return 0 ;

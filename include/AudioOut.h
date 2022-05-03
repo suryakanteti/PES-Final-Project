@@ -31,4 +31,8 @@ void AudioOut_Init();
  */
 void AudioOut_Start();
 
+
+
+void ComputeSamples();
+
 #endif /* __AUDIO_OUT_H__ */

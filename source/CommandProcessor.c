@@ -216,13 +216,14 @@ void HandleCommand(char* input)
 
 
 
-bool ReadLine(char* commandStr, int* index)
+bool ReadLine(char* commandStr, int* index, uint8_t maxSize)
 {
-	char ch;
+	int ch;
 	bool completed = false;
 
 	ch = getchar();
-	if(ch != -1 && ch != ENTER_KEY)
+
+	if(ch != 255 && ch != ENTER_KEY)
 	{
 		commandStr[*index] = ch;
 		*index = *index + 1;

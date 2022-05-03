@@ -21,7 +21,7 @@ void HandleCommand(char* input);
 
 
 
-bool ReadLine(char* commandStr, int* index);
+bool ReadLine(char* commandStr, int* index, uint8_t maxSize);
 
 
 #endif /* COMMANDPROCESSOR_H_ */
