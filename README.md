@@ -20,6 +20,10 @@ Connect a speaker to the FRDM-KL25Z board by connecting the PTE30 DAC output pin
 
 Run the project.
 
+Use the UART command line interpretor using the following configuration (It could be on a different COM port):
+
+![image](https://user-images.githubusercontent.com/81984166/161912221-563be975-3957-401a-97ca-3bd9fc3bd1aa.png)
+
 On running the project the following, line appears on the screen.
 
 ![image](https://user-images.githubusercontent.com/81984166/166408324-7e3a9f34-e9d4-4146-9be3-1530b3ad1599.png)
