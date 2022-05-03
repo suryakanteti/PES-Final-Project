@@ -32,6 +32,9 @@ The supported commands are as follows:
 
 The UART is non-blocking and highly responsive, where the user can enter commands even while the tones are playing.
 
+
+Please refer to the project proposal document for further details.
+
 The DSP effect of an echo is introduced using the echo command, where the echo sound effect is created for a tone with diminishing volume.
 
 The "play" command can take multiple tones at once, including the duration of each tone in seconds.
