@@ -7,12 +7,13 @@
 
 #include "MKL25Z4.h"
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "SysTick.h"
 #include "cbfifo.h"
-
 #include "fp_trig.h"
 
+// Frequency of clock used
 #define CLOCK_FREQUENCY (48000000)
 
 // Sampling rate of DAC
@@ -21,25 +22,32 @@
 // Pin of DAC output
 #define DAC_POS (30)
 
+// Number of ticks in one second
+#define TICKS_PER_SECOND (16)
 
-uint16_t samplesBuffers[2][150]; // Buffers to alternate between
+// Frequencies of the supported tones
+uint16_t toneFrequencies[] = {440, 494, 523, 587, 659, 698, 784};
+
+// Common variables (play)
+#define ALTERNATING_BUFFERS (2)
+#define MAX_BUFFER_SIZE (150)
 
 int currentBuffer = 0; // Index to keep track of samplesBuffers
-
-enum e_Tone{
-		A,
-		D,
-};
-
-uint16_t toneFrequencies[] = {440, 587};
-
+uint8_t toneDuration = 0;
+uint16_t samplesBuffers[ALTERNATING_BUFFERS][MAX_BUFFER_SIZE]; // Buffers to alternate between
 const static uint16_t emptyBuff[] = {0};
 
-uint8_t toneDuration = 0;
+// Echo parameters
+#define ECHO_BUFFER_SIZE (6000)
+#define ECHO_BUFFER_PARTITION (3500)
+#define GAIN (0.6)
+bool echoEnabled = false; // Flag to check if echo mode is enabled
+uint16_t echoBuffer[ECHO_BUFFER_SIZE]; // Buffer containing echo samples
 
-// Variables to store playback source and count
+// Variables to store play-back source and count
 static uint16_t * Reload_DMA_Source = emptyBuff;
 static uint32_t Reload_DMA_Byte_Count = 2;
+
 
 /*
  * Initialize TPM0
@@ -148,24 +156,6 @@ void DMA_Init()
 
 
 /*
- * Set placback values of DMA
- *
- * Contains the implementation to set the playback values
- * for the DMA module.
- *
- * @input None
- * @return None
- *
- */
-void DMA_SetPlaybackValues(uint16_t * source, uint32_t count)
-{
-	// Save reload information
-	Reload_DMA_Source = source;
-	Reload_DMA_Byte_Count = count*2;
-}
-
-
-/*
  * Start DMA placback.
  *
  * Contains the implementation to start the DMA playback.
@@ -262,29 +252,64 @@ void AudioOut_Init()
  */
 void AudioOut_Start()
 {
-	TPM0_Start();
+	TPM0_Start(); // Start the individual modules
 	DMA_StartPlayback();
 }
 
 
-
+/*
+ * Compute samples based on tone frequencies and echo mode.
+ *
+ * Contains the implementation to compute the samples based on the tone
+ * frequency as well as the echo mode flag.
+ *
+ * @input None
+ * @return None
+ *
+ */
 void ComputeSamples()
 {
 	uint8_t tone;
 	int count;
 
-	if(get_timer() > 16 * toneDuration)
+	if(echoEnabled)
+	{
+		for(int i = 0; i < ECHO_BUFFER_SIZE; i++)
+		{
+			echoBuffer[i] *= 0.97;
+		}
+	}
+
+	if(get_timer() > TICKS_PER_SECOND * toneDuration)
 	{
 		reset_timer();
+
 		if(cbfifo_dequeue(TONES, &tone, 1) == 1)
 		{
 			cbfifo_dequeue(TONES, &toneDuration, 1);
 			count = tone_to_samples(samplesBuffers[currentBuffer], toneFrequencies[tone]);
 
-			Reload_DMA_Source = samplesBuffers[currentBuffer];
-			Reload_DMA_Byte_Count = count * 2;
+			if(echoEnabled)
+			{
+				// Initialize the echo buffer
+				for(int i = 0; i < ECHO_BUFFER_PARTITION; i++)
+				{
+					echoBuffer[i] = samplesBuffers[currentBuffer][i % count];
+				}
+				for(int i = ECHO_BUFFER_PARTITION; i < ECHO_BUFFER_SIZE; i++)
+				{
+					echoBuffer[i] = samplesBuffers[currentBuffer][i % count] + samplesBuffers[currentBuffer][(i - ECHO_BUFFER_PARTITION) % count] * GAIN;
+				}
+				Reload_DMA_Source = echoBuffer;
+				Reload_DMA_Byte_Count = 2 * ECHO_BUFFER_SIZE;
+			}
+			else
+			{
+				Reload_DMA_Source = samplesBuffers[currentBuffer];
+				Reload_DMA_Byte_Count = count * 2;
+			}
 
-			currentBuffer = 1 - currentBuffer;
+			currentBuffer = 1 - currentBuffer; // Switch between the buffers
 		}
 		else
 		{
@@ -292,5 +317,21 @@ void ComputeSamples()
 			Reload_DMA_Byte_Count = 2;
 			toneDuration = 0;
 		}
+
 	}
+}
+
+
+/*
+ * Interface to set the echo mode flag
+ *
+ * Contains the implementation to set the echo mode flag.
+ *
+ * @input flag	Value to set for the flag
+ * @return None
+ *
+ */
+void SetEchoMode(bool flag)
+{
+	echoEnabled = flag;
 }

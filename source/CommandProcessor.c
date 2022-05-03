@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include "cbfifo.h"
 
+// Macro for enter key
 #define ENTER_KEY (13)
 
 // Argument parameters
@@ -35,11 +36,15 @@ void Handler_Play(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUME
 void Handler_Echo(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS]);
 void Handler_Help(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS]);
 
+
 // Command table containing all the supported commands.
 static const command_table_t commands[] = {
 
 		{"author", &Handler_Author, "\n\r\tPrint the author's name"},
-		{"play"  , &Handler_Play  , "\n\r\tPlay the inputted tones based on the duration"},
+		{"play"  , &Handler_Play  , "\n\r\tPlay the inputed tones based on the duration" \
+									"\n\r\tEnter the tone followed by the duration in seconds"
+									"\n\r\tSupported tones are from A to G" \
+									"\n\r\tRange of duration (1 to 60 seconds)"},
 		{"echo"  , &Handler_Echo  , "\n\r\tSet the echo mode on or off"},
 		{"help"  , &Handler_Help  , "\n\r\tPrint this help message"},
 };
@@ -81,20 +86,39 @@ void Handler_Author(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGU
   */
 void Handler_Play(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS])
 {
+	if(argc > 20)
+	{
+		printf("\r\nPlease enter a maximum of 20 tones at once!\r\n");
+	}
+
 	int tone = -1;
 	int duration;
 
 	for(int i = 1; i < argc; i++)
 	{
 		duration = 0;
-
 		switch (toupper(argv[i][0]))
 		{
 		case 'A':
 			tone = 0;
 			break;
-		case 'D':
+		case 'B':
 			tone = 1;
+			break;
+		case 'C':
+			tone = 2;
+			break;
+		case 'D':
+			tone = 3;
+			break;
+		case 'E':
+			tone = 4;
+			break;
+		case 'F':
+			tone = 5;
+			break;
+		case 'G':
+			tone = 6;
 			break;
 		}
 
@@ -110,6 +134,7 @@ void Handler_Play(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUME
 	printf("\n\rTones in progress...\r\n");
 }
 
+
 /*
   * Handles the command "echo".
   * Sets echo mode to on or off based on parameters.
@@ -123,8 +148,28 @@ void Handler_Play(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUME
   */
 void Handler_Echo(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS])
 {
-	printf("\n\rEcho mode...yet to do...\r\n");
+	if(argc != 2)
+	{
+		printf("\r\nInvalid number of arguments. Please check!\r\n");
+		return;
+	}
+
+	if(strcasecmp(argv[1],"off") == 0)
+	{
+		SetEchoMode(false);
+		printf("\r\nDisabling echo mode...\r\n");
+	}
+	else if(strcasecmp(argv[1],"on") == 0)
+	{
+		SetEchoMode(true);
+		printf("\r\nEnabling echo mode...\r\n");
+	}
+	else
+	{
+		printf("\r\Invalid echo option...\r\n");
+	}
 }
+
 
 /*
   * Handles the command "help".
@@ -139,7 +184,7 @@ void Handler_Echo(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUME
   */
 void Handler_Help(int argc, char argv[MAX_NUM_OF_ARGUMENTS][MAX_LENGTH_OF_ARGUMENTS])
 {
-	printf("\r\n\nBreakfastSerial Command Processor\r\n\n");
+	printf("\r\n\ARMonica Command Processor\r\n\n");
 	for(int i = 0; i < num_commands; i++)
 	{
 		printf("\r%s", commands[i].name);
@@ -215,13 +260,25 @@ void HandleCommand(char* input)
 }
 
 
-
+/*
+  * Reads the string entered by user on the UART based console.
+  *
+  * Parameters:
+  *   commandStr	Pointer to a buffer which can hold the command
+  *   maxSize		Max capacity of the buffer
+  *
+  * Returns:
+  * 	A string (char*) which contains the input from the user
+  */
 bool ReadLine(char* commandStr, int* index, uint8_t maxSize)
 {
 	int ch;
 	bool completed = false;
 
 	ch = getchar();
+
+	if(*index >= maxSize)
+		return false;
 
 	if(ch != 255 && ch != ENTER_KEY)
 	{

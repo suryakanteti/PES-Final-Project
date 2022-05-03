@@ -33,10 +33,7 @@ int __sys_readc()
 	// Dequeue from the RXQ queue
 	char ch;
 
-	// Wait till something is written into RX buffer.
-	//while(cbfifo_length(RXQ) == 0);
-
-	if(cbfifo_length(RXQ) == 0)
+	if(cbfifo_length(RXQ) == 0) // Return -1 if no character is present.
 		return -1;
 
 	if(cbfifo_dequeue(RXQ, &ch, sizeof(char)) == 0) // Some error
@@ -211,5 +208,4 @@ void UART0_IRQHandler(void) {
 			UART0->C2 &= ~UART0_C2_TIE_MASK;
 		}
 	}
-
 }

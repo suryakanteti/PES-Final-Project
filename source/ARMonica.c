@@ -59,7 +59,18 @@ int main(void) {
     BOARD_InitDebugConsole();
 #endif
 
-    Init_UART0(BAUD_RATE);
+    Init_UART0(BAUD_RATE); // Initialize UART
+
+#ifdef DEBUG
+
+    test_cbfifo(); // Test the cbfifo module
+    test_sin(); // Test sine values
+
+    printf("Completed cbfifo and sin function tests\r\n\n");
+
+#endif
+
+    // Initialize all the required modules
     SysTick_Init();
     AudioOut_Init();
     AudioOut_Start();
@@ -67,9 +78,8 @@ int main(void) {
     printf("ARMonica time!\r\n");
     printf("? ");
 
-
     bool handleCommand = false;
-    char command[100];
+    char command[100]; // String to store the input command
     int index = 0;
 
     while (1)
@@ -82,9 +92,7 @@ int main(void) {
         	handleCommand = false;
         	printf("? ");
         }
-
-        ComputeSamples();
+        ComputeSamples(); // Compute samples based on the tone inputted.
     }
-
     return 0 ;
 }
