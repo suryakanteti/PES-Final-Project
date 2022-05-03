@@ -5,7 +5,7 @@ Final Project of Principles of Embedded Software, ECEN 5813, Spring 2022
 Developed by Surya Kanteti
 
 # Project Description
-The project contains the implementation of "ARMoinca" a command-line processor based musical instrument which runs on the KL25Z-FRDM board. It can take commands from the user and play a musical tone according to it.
+The project contains the implementation of "ARMonica" a command-line processor based musical instrument which runs on the KL25Z-FRDM board. It can take commands from the user and play a musical tone according to it.
 
 # Files in the project:
 Source files: ARMonica.c, AudioOut.c, cbfifo.c, CommandProcessor.c, fp_trig.c, UART_IO.c
